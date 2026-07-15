@@ -107,6 +107,17 @@ displayOptimizedImages(imagesData);
 
 // galleryGrid.append(...cardElements);
 
+//Debounce utility to handle fast type and filtering on every single keystroke
+const debounce = (func, delay) => {
+    let timeoutId;
+    return function (...args) {
+        if(timeoutId) clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
+}
+
 // Search method 1
 
 // searchInput.addEventListener('input', (event) => {
@@ -121,7 +132,7 @@ displayOptimizedImages(imagesData);
 
 //search method 2
 
-searchInput.addEventListener('input', (event) => {
+const handleSearch = (event) => {
     const query = event.target.value.toLowerCase().trim();
     const filtered = imagesData.filter(img => {
         const matchesTitle = img.title.toLowerCase().includes(query);
@@ -132,4 +143,8 @@ searchInput.addEventListener('input', (event) => {
     });
 
     displayOptimizedImages(filtered);
-});
+};
+// searchInput.addEventListener('input', handleSearch);
+
+const debouncedSearch = debounce(handleSearch, 300);
+searchInput.addEventListener('input', debouncedSearch);
