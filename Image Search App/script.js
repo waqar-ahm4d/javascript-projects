@@ -1,8 +1,10 @@
 import imagesData from './data.js';
 const searchInput = document.getElementById("searchInput");
 const galleryGrid = document.getElementById("galleryGrid");
+const subHeading = document.querySelector('#subheading');
 // Naive approach to display images
 // const displayImages = (images) => {
+    // subHeading.textContent = `Render Images using innerHTML (Naive Approach)`;
 //   galleryGrid.innerHTML = "";
 //   images.forEach((image) => {
 //     const cardHTML = `
@@ -21,6 +23,7 @@ const galleryGrid = document.getElementById("galleryGrid");
 
 //Optimized approach to display images
 const displayOptimizedImages = (images) => {
+    subHeading.textContent = `Render Images using DocumentFragment & forEach`;
     galleryGrid.innerHTML = "";
     //Empty state fallback
     if(images.length === 0){
@@ -79,6 +82,7 @@ displayOptimizedImages(imagesData);
 // `).join('');
 
 // galleryGrid.innerHTML = gridHTML;
+// subHeading.textContent = `Render Images using map()`;
 
 // using map() and create Elements
 // const cardElements = images.map(image => {
