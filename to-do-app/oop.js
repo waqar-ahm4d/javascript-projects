@@ -82,7 +82,7 @@ class TodoApp {
         }
         this.tasks.forEach(task => {
             const li = document.createElement('li');
-            li.className = `todo-item ${task.isCompleted ? 'checked' : ''}`;
+            li.className = `todo-item ${task.isCompleted ? 'completed' : ''}`;
             li.dataset.id = task.id;
 
             li.innerHTML = `<div class="todo-item-left">
