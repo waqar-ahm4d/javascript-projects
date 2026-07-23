@@ -6,40 +6,56 @@ const historyElement = document.querySelector(".history");
 
 const keysContainer = document.querySelector(".keys");
 
+const handlers = {
+    number: inputNumber,
+    operator: inputOperator,
+    decimal: inputDecimal,
+    calculate: calculateResult,
+    clear: clearCalculator,
+    sign: toggleSign,
+    percent: percentage
+}
 keysContainer.addEventListener("click", (e) => {
   const button = e.target.closest("button");
   if (!button) return;
 
   const { type, value } = button.dataset;
+
+  const handler = handlers[type];
+
+  if(!handler) return;
+
+  handler(value);
+  
   // key-types: number, operator, calculate, clear, decimal
-  if (type === "number") {
-    inputNumber(value);
-    return;
-  }
-  if (type === "operator") {
-    inputOperator(value);
-    return;
-  }
-  if (type === "calculate") {
-    calculateResult();
-    return;
-  }
-  if (type === "decimal") {
-    inputDecimal();
-    return;
-  }
-  if (type === "clear") {
-    clearCalculator();
-    return;
-  }
-  if (type === "sign") {
-    toggleSign();
-    return;
-  }
-  if (type === "percent") {
-    percentage();
-    return;
-  }
+//   if (type === "number") {
+//     inputNumber(value);
+//     return;
+//   }
+//   if (type === "operator") {
+//     inputOperator(value);
+//     return;
+//   }
+//   if (type === "calculate") {
+//     calculateResult();
+//     return;
+//   }
+//   if (type === "decimal") {
+//     inputDecimal();
+//     return;
+//   }
+//   if (type === "clear") {
+//     clearCalculator();
+//     return;
+//   }
+//   if (type === "sign") {
+//     toggleSign();
+//     return;
+//   }
+//   if (type === "percent") {
+//     percentage();
+//     return;
+//   }
 });
 document.addEventListener("keydown", (e) => {
   const key = e.key;
