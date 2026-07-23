@@ -118,18 +118,27 @@ function calculate(firstValue, secondValue, operator) {
     const first = Number(firstValue);
     const second = Number(secondValue);
 
-    switch(operator) {
-        case 'add': 
-           return first + second;
-        case 'subtract': 
-           return first - second;
-        case 'multiply': 
-           return first * second;
-        case 'divide': 
-           return second === 0 ? "Error" : first / second;
-    }
+    // switch(operator) {
+    //     case 'add': 
+    //        return first + second;
+    //     case 'subtract': 
+    //        return first - second;
+    //     case 'multiply': 
+    //        return first * second;
+    //     case 'divide': 
+    //        return second === 0 ? "Error" : first / second;
+    // }
+
+    return operations[operator](first, second);
 }
- 
+
+const operations = {
+    add: (a, b) => a + b,
+    subtract: (a, b) => a - b,
+    multiply: (a, b) => a * b,
+    divide: (a, b) => b === '0' ? 'Error' : a / b
+}
+
 function clearCalculator() {
     Object.assign(calculatorState, INITIAL_STATE);
 
