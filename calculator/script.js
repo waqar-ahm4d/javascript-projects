@@ -26,7 +26,7 @@ keysContainer.addEventListener("click", (e) => {
   if(!handler) return;
 
   handler(value);
-  
+
   // key-types: number, operator, calculate, clear, decimal
 //   if (type === "number") {
 //     inputNumber(value);
@@ -113,6 +113,11 @@ function updateDisplay() {
 updateDisplay();
 
 function inputNumber(number) {
+  if(calculatorState.displayValue === 'Error' || calculatorState.displayValue === 'Infinity') {
+    calculatorState.displayValue = number;
+    updateDisplay();
+    return;
+  }
   if (calculatorState.waitingForSecondValue) {
     calculatorState.displayValue = number;
     calculatorState.waitingForSecondValue = false;
@@ -130,21 +135,50 @@ function inputNumber(number) {
   updateDisplay();
 }
 
+// function inputOperator(nextOperator) {
+//   if(calculatorState.waitingForSecondValue && calculatorState.firstValue !== null) {
+//     calculatorState.operator = nextOperator;
+//     return;
+//   }
+ 
+//   const { firstValue, operator, displayValue } = calculatorState;
+
+//   if (firstValue === null) calculatorState.firstValue = displayValue;
+//   else if (operator) {
+//     const result = calculate(firstValue, displayValue, operator);
+
+//     calculatorState.displayValue = String(result);
+//     calculatorState.firstValue = String(result);
+
+//     updateDisplay();
+//   }
+//   calculatorState.waitingForSecondValue = true;
+//   calculatorState.operator = nextOperator;
+// }
+
 function inputOperator(nextOperator) {
-  const { firstValue, operator, displayValue } = calculatorState;
+    const {firstValue, operator, displayValue, waitingForSecondValue} = calculatorState;
 
-  if (firstValue === null) calculatorState.firstValue = displayValue;
-  else if (operator) {
-    const result = calculate(firstValue, displayValue, operator);
+    if(waitingForSecondValue) {
+        calculatorState.operator = nextOperator;
+        return;
+    }
 
-    calculatorState.displayValue = String(result);
-    calculatorState.firstValue = String(result);
+    if(firstValue === null) {
+        calculatorState.firstValue = displayValue;
+    } else {
+        const result = calculate(firstValue, displayValue, operator);
 
-    updateDisplay();
-  }
-  calculatorState.waitingForSecondValue = true;
-  calculatorState.operator = nextOperator;
+        calculatorState.displayValue = String(result);
+        calculatorState.firstValue = String(result);
+
+        updateDisplay()
+    }
+
+    calculatorState.waitingForSecondValue = true;
+    calculatorState.operator = nextOperator;
 }
+
 // function inputOperator(operator) {
 //     calculatorState.firstValue = calculatorState.displayValue;
 //     calculatorState.operator = operator;
