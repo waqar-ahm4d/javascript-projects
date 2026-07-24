@@ -40,8 +40,8 @@ const itemCount = document.querySelector(".item-count");
 const subtotalElement = document.querySelector(".subtotal");
 
 const searchInput = document.querySelector(".search-input");
-
 const sortSelect = document.querySelector(".sort-select");
+const categorySelect = document.querySelector(".category-select");
 
 // State
 const state = {
@@ -70,64 +70,100 @@ function getCartItem(id) {
   return state.cart.find((item) => item.id === id);
 }
 
-function getFilteredProducts() {
-//   const search = state.search.trim().toLowerCase();
+function filterProducts(products) {
+  const search = state.search.trim().toLowerCase();
 
-//   if (!search) return state.products;
+  return products.filter((product) => {
+    const matchesSearch =
+      !search ||
+      product.title.toLowerCase().includes(search) ||
+      product.category.toLowerCase().includes(search);
 
-//   return state.products.filter((product) => {
-//     return (
-//       product.title.toLowerCase().includes(search) ||
-//       product.category.toLowerCase().includes(search)
-//     );
-//   });
+    const matchesCategory =
+      state.category === "all" || product.category === state.category;
 
-    let products = [...state.products];
-    if(state.search) {
-        const search = state.search.trim().toLowerCase();
-        
-        if(!search) return products;
-
-        products = products.filter(product => {
-            return (
-                product.title.toLowerCase().includes(search) || product.category.toLowerCase().includes(search)
-            );
-        });
-    }
-    switch(state.sort) {
-        case 'price-low':
-            products.sort((a, b) => a.price - b.price);
-            break;
-        case 'price-high':
-            products.sort((a, b) => b.price - a.price);
-            break;
-        case 'rating':
-            products.sort((a, b) => b.rating - a.rating);
-            break;
-        case 'name':
-            products.sort((a, b) => a.title.localeCompare(b.title));
-            break;
-        default:
-            break;
-    }
-    return products;
+    return matchesSearch && matchesCategory;
+  });
 }
+
+function sortProducts(products) {
+  switch (state.sort) {
+    case "price-low":
+      products.sort((a, b) => a.price - b.price);
+      break;
+    case "price-high":
+      products.sort((a, b) => b.price - a.price);
+      break;
+    case "rating":
+      products.sort((a, b) => b.rating - a.rating);
+      break;
+    case "name":
+      products.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    default:
+      break;
+  }
+  return products;
+}
+
+function getFilteredProducts() {
+  //   const search = state.search.trim().toLowerCase();
+
+  //   if (!search) return state.products;
+
+  //   return state.products.filter((product) => {
+  //     return (
+  //       product.title.toLowerCase().includes(search) ||
+  //       product.category.toLowerCase().includes(search)
+  //     );
+  //   });
+
+  let products = [...state.products];
+
+  products = filterProducts(products);
+  products = sortProducts(products);
+
+  return products;
+}
+
+// custom debounce
+
 // Search
 
-searchInput.addEventListener("input", handleSearch);
+// custom debounce
+// let searchTimer;
+// searchInput.addEventListener("input", (e) => {
+//   clearTimeout(searchTimer);
+
+//   searchTimer = setTimeout(() => {
+//     updateState("search", e.target.value.trim().toLowerCase());
+//   }, 300);
+// });
+
+// encapsulated debounce
+const debouncedSearch = debounce(handleSearch, 300);
+
+searchInput.addEventListener('input', debouncedSearch);
+
+function debounce(callback, delay) {
+    let timer;
+
+    return function(...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            callback(...args);
+        }, delay);
+    }
+}
 
 function handleSearch(e) {
-  state.search = e.target.value;
-  renderProducts();
+    updateState('search', e.target.value.trim().toLowerCase());
 }
 
-// Sorting 
-sortSelect.addEventListener('click', hanldeSortClick);
-
-function hanldeSortClick(e) {
-    state.sort = e.target.value;
-    renderProducts();
-}
+// Sorting
+sortSelect.addEventListener("click", (e) => {
+  updateState("sort", e.target.value);
+});
 
 // Storage
 function saveCart() {
@@ -138,6 +174,16 @@ function loadCart() {
   const savedCart = localStorage.getItem("cart");
   if (!savedCart) return;
   state.cart = JSON.parse(savedCart);
+}
+
+// Categories
+categorySelect.addEventListener("change", (e) => {
+  updateState("category", e.target.value);
+});
+
+function getCategories() {
+  const categories = state.products.map((product) => product.category);
+  return ["all", ...new Set(categories)];
 }
 
 // Renderinng
@@ -189,6 +235,14 @@ function updateSummary() {
   itemCount.textContent = totalItems;
 
   subtotalElement.textContent = subtotal;
+}
+
+function renderCategories() {
+  categorySelect.innerHTML = getCategories()
+    .map((category) => {
+      return `<option value="${category}">${category}</option>`;
+    })
+    .join("");
 }
 
 // Actions
@@ -279,6 +333,10 @@ function removeFromCart(id) {
   refreshCart();
 }
 
+function updateState(key, value) {
+  state[key] = value;
+  renderProducts();
+}
 
 // Initialization
 
@@ -286,6 +344,7 @@ function init() {
   setProducts(mockProducts);
   loadCart();
   renderProducts();
+  renderCategories();
   refreshCart();
 }
 init();
